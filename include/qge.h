@@ -8,6 +8,17 @@ struct {
     GLFWwindow *window;
 } ctx;
 
+// Colors
+typedef struct {
+    float r, g, b, a;
+} Color;
+
+#define BLACK (Color){ 0.0f, 0.0f, 0.0f, 1.0f }
+#define WHITE (Color){ 1.0f, 1.0f, 1.0f, 1.0f }
+#define RED   (Color){ 1.0f, 0.0f, 0.0f, 1.0f }
+#define GREEN (Color){ 0.0f, 1.0f, 0.0f, 1.0f }
+#define BLUE  (Color){ 0.0f, 0.0f, 1.0f, 1.0f }
+
 // Initializes the window
 bool CreateWindow( const char *title, int width, int height ) {
     // Initialize the library
@@ -26,6 +37,8 @@ bool CreateWindow( const char *title, int width, int height ) {
     if ( !gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress ) )
         return false;
     
+    // glViewport( 0, 0, width, height );
+    
     return true;
 }
 
@@ -33,6 +46,11 @@ bool CreateWindow( const char *title, int width, int height ) {
 #define WindowShouldClose() \
     glfwWindowShouldClose( ctx.window )
 
+// Clears the screen as a specific color
+void ClearWindow( Color color ) {
+    glClearColor( color.r, color.g, color.b, color.a );
+    glClear( GL_COLOR_BUFFER_BIT );
+}
 
 // Close window
 void CloseWindow() {

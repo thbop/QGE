@@ -4,11 +4,10 @@
 int main() {
     CreateWindow( "Hello World OpenGL", 640, 480 );
 
-    /* Loop until the user closes the window */
-    while ( !WindowShouldClose() )
-    {
-        /* Render here */
-        glClear( GL_COLOR_BUFFER_BIT );
+    // Loop until the user closes the window
+    while ( !WindowShouldClose() ) {
+        // Drawing
+        ClearWindow( BLUE );
 
         glBegin( GL_TRIANGLES );
             glColor4f( 1.0f, 0.0f, 0.0f, 1.0f );
