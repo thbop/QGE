@@ -1,8 +1,9 @@
 CC = gcc
-LIB = src/glad.c -Llib -lglfw3dll
+SRC_FILES = src/glad.c
+LIB = -Llib -lglfw3dll
 INCLUDE = -Iinclude
 
 all: qge
 
 qge:
-	$(CC) qge.c $(LIB) $(INCLUDE) -o qge.exe
+	$(CC) qge.c $(SRC_FILES) $(LIB) $(INCLUDE) -o qge.exe
