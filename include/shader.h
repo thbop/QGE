@@ -1,9 +1,6 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-typedef struct {
-    int a;
-} Shader;
 
 typedef unsigned int ShaderHandle;
 
@@ -33,11 +30,32 @@ ShaderHandle CompileShader( const char *sourceFileName, int type ) {
     return shader;
 }
 
-Shader LoadShaderProgram( const char *vertFileName, const char *fragFileName ) {
+// Loads a shader program
+ShaderHandle LoadShaderProgram( const char *vertFileName, const char *fragFileName ) {
+    // Compile vertex and fragment shaders
     ShaderHandle vertexShader   = CompileShader( vertFileName, GL_VERTEX_SHADER );
     ShaderHandle fragmentShader = CompileShader( fragFileName, GL_FRAGMENT_SHADER );
 
+    // Create program and link vertex and fragment shaders into it
+    ShaderHandle program = glCreateProgram();
+    glAttachShader( program, vertexShader );
+    glAttachShader( program, fragmentShader );
+    glLinkProgram( program );
+
+    // Destroy old shader objects
+    glDeleteShader( vertexShader );
+    glDeleteShader( fragmentShader );
+
+    // Check for linking errors
+    int success;
+    char infoLog[512];
+    glGetProgramiv( program, GL_LINK_STATUS, &success );
+    if ( !success ) {
+        glGetProgramInfoLog( program, 512, NULL, infoLog );
+        printf( "[ERROR] Failed to link \"%s\" and \"%s\" into program:\n%s", vertFileName, fragFileName, infoLog );
+    }
     
+    return program;
 }
 
 #endif
