@@ -1,7 +1,15 @@
+// Standard includes
+#include "stdio.h"
+#include "stdbool.h"
+
+// OpenGL stuff
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-#include "stdbool.h"
+// My stuff
+#include "tfile.h"
+#include "shader.h"
+
 
 // Context
 struct {

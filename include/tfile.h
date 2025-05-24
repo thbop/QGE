@@ -13,15 +13,19 @@ char *TFileOpen( const char *fileName ) {
 
     // Get file size
     fseek( fp, 0, SEEK_END );
-    long size = ftell( fp ) + 1; // +1 for the null terminator
+    long size = ftell( fp );
     fseek( fp, 0, SEEK_SET );
 
-    // Allocate buffer
-    char *buffer = (char*)malloc( size );
-    buffer[size - 1] = '\0'; // Set null terminator
 
+    // Allocate buffer
+    char *buffer = (char*)calloc( size + 1, sizeof(char) ); // +1 for the null terminator
+    
     // Read into buffer
     fread( buffer, sizeof(char), size, fp );
+
+    // for ( long i = 0; i < size + 1; i++ ) {
+    //     printf("%02X ", buffer[i]);
+    // }
 
     fclose( fp );
     

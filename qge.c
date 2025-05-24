@@ -1,29 +1,35 @@
 #include "qge.h"
 
-
 int main() {
     CreateWindow( "Hello World OpenGL", 640, 480 );
+
+    // Vertex buffer
+    float verticies[] = {
+        -0.5f, -0.5f,  0.0f,
+         0.5f, -0.5f,  0.0f,
+         0.0f,  0.5f,  0.0f
+    };
+
+    unsigned int vbo;
+    glGenBuffers( 1, &vbo );
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBufferData( GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW );
+
+    // Shader stuff
+    LoadShaderProgram( "shaders/core.vert", "shaders/core.frag" );
+
 
     // Loop until the user closes the window
     while ( !WindowShouldClose() ) {
         // Drawing
-        ClearWindow( BLUE );
+        ClearWindow( BLACK );
 
-        glBegin( GL_TRIANGLES );
-            glColor4f( 1.0f, 0.0f, 0.0f, 1.0f );
-            glVertex2f( -1.0f, -1.0f );
+        
 
-            glColor4f( 0.0f, 1.0f, 0.0f, 1.0f );
-            glVertex2f( 0.0f, 1.0f );
-
-            glColor4f( 0.0f, 0.0f, 1.0f, 1.0f );
-            glVertex2f( 1.0f, -1.0f );
-        glEnd();
-
-        /* Swap front and back buffers */
+        // Swap front and back buffers
         glfwSwapBuffers( ctx.window );
 
-        /* Poll for and process events */
+        // Poll for and process events
         glfwPollEvents();
     }
 
