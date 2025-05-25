@@ -9,6 +9,7 @@
 // My stuff
 #include "tfile.h"
 #include "shader.h"
+#include "model.h"
 
 
 // Context

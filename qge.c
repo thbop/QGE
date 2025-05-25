@@ -3,6 +3,7 @@
 int main() {
     CreateWindow( "Hello World OpenGL", 640, 480 );
 
+
     // Vertex buffer
     float verticies[] = {
         // positions         colors
