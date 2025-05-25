@@ -1,6 +1,8 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+#include "vector234.h"
+
 
 typedef unsigned int ShaderHandle;
 
@@ -54,8 +56,13 @@ ShaderHandle LoadShaderProgram( const char *vertFileName, const char *fragFileNa
         glGetProgramInfoLog( program, 512, NULL, infoLog );
         printf( "[ERROR] Failed to link \"%s\" and \"%s\" into program:\n%s", vertFileName, fragFileName, infoLog );
     }
-    
+
     return program;
+}
+
+void ShaderUniform4f( ShaderHandle shader, const char *name, Vector4 value ) {
+    int location = glGetUniformLocation( shader, name );
+    glUniform4f( location, value.x, value.y, value.z, value.w );
 }
 
 #endif

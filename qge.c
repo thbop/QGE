@@ -5,15 +5,14 @@ int main() {
 
     // Vertex buffer
     float verticies[] = {
-         0.5f,  0.5f,  0.0f, // Top right
-         0.5f, -0.5f,  0.0f, // Bottom right
-        -0.5f, -0.5f,  0.0f, // Bottom left
-        -0.5f,  0.5f,  0.0f, // Top left
+        // positions         colors
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom left
+         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f, // top 
     };
 
     unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3,
+        0, 1, 2,
     };
 
     unsigned int vao, ebo, vbo;
@@ -28,8 +27,13 @@ int main() {
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW );
     
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0 );
+    // position attribute
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0 );
     glEnableVertexAttribArray( 0 );
+
+    // color attribute
+    glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)) );
+    glEnableVertexAttribArray( 1 );
 
     // Shader stuff
     ShaderHandle shader = LoadShaderProgram( "shaders/core.vert", "shaders/core.frag" );
