@@ -10,6 +10,8 @@
 // contents.
 char *TFileOpen( const char *fileName ) {
     FILE *fp = fopen( fileName, "r" );
+    if ( fp == NULL )
+        return NULL;
 
     // Get file size
     fseek( fp, 0, SEEK_END );
@@ -22,10 +24,6 @@ char *TFileOpen( const char *fileName ) {
     
     // Read into buffer
     fread( buffer, sizeof(char), size, fp );
-
-    // for ( long i = 0; i < size + 1; i++ ) {
-    //     printf("%02X ", buffer[i]);
-    // }
 
     fclose( fp );
     

@@ -62,4 +62,16 @@ char **TStringSplit( char *string, char separator, int *stringCount ) {
     return list;
 }
 
+// Frees a string array
+// Ensure that stringCount reflects the actual size of the array or the program
+// will seg fault.
+void TStringFreeStringArray( char **stringArray, int stringCount ) {
+    if ( stringArray == NULL ) return;
+
+    for ( int i = 0; i < stringCount; i++ ) {
+        if ( stringArray[i] != NULL )
+            free( stringArray[i] );
+    }
+}
+
 #endif
