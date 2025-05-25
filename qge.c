@@ -46,7 +46,7 @@ int main() {
         glUseProgram( shader );
         glBindVertexArray( vao );
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
-        glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0 );
+        glDrawElements( GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)0 );
 
         // Swap front and back buffers
         glfwSwapBuffers( ctx.window );

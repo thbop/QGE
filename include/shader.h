@@ -60,6 +60,21 @@ ShaderHandle LoadShaderProgram( const char *vertFileName, const char *fragFileNa
     return program;
 }
 
+void ShaderUniform1f( ShaderHandle shader, const char *name, float value ) {
+    int location = glGetUniformLocation( shader, name );
+    glUniform1f( location, value );
+}
+
+void ShaderUniform2f( ShaderHandle shader, const char *name, Vector2 value ) {
+    int location = glGetUniformLocation( shader, name );
+    glUniform2f( location, value.x, value.y );
+}
+
+void ShaderUniform3f( ShaderHandle shader, const char *name, Vector3 value ) {
+    int location = glGetUniformLocation( shader, name );
+    glUniform3f( location, value.x, value.y, value.z );
+}
+
 void ShaderUniform4f( ShaderHandle shader, const char *name, Vector4 value ) {
     int location = glGetUniformLocation( shader, name );
     glUniform4f( location, value.x, value.y, value.z, value.w );
