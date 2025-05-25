@@ -6,8 +6,6 @@
 #include "string.h"
 #include "stdlib.h"
 
-#include "list_t.h"
-
 // Returns a heap-allocated substring given a string, a starting pos,
 // and the number of characters to copy over (len).
 // Returns NULL if the input is invalid
@@ -27,11 +25,39 @@ char *TStringSubStr( char *string, int pos, int len ) {
     return buffer;
 }
 
-// Splits a given null-terminated string by a given char
-// Returns a list of strings excluding the separator
-list_t TStringSplit( char *string, char separator ) {
-    list_t list = new_list();
+// Returns the number of times a particular character appears in a string.
+int TStringCountChar( char *string, char character ) {
+    int length = strlen( string );
+    int count = 0;
+    for ( int i = 0; i < length; i++ )
+        if ( string[i] == character )
+            count++;
 
+    return count;
+}
+
+// Splits a given null-terminated string by a given char
+// Returns an array of strings and the number of strings (stringCount)
+// NOTE: Everything returned by this function is heap-allocated and must be
+// freed by the user.
+char **TStringSplit( char *string, char separator, int *stringCount ) {
+    *stringCount = TStringCountChar( string, separator ) + 1;
+    char **list = (char**)malloc( sizeof(char*) * *stringCount + 1 );
+
+    int length = strlen( string );
+    int start = 0; // Start of the current substring
+    int j = 0; // Position in the list of strings
+
+    for ( int i = 0; i < length; i++ ) {
+        if ( string[i] == separator ) {
+            list[j] = TStringSubStr( string, start, i - start );
+            start = i + 1;
+            j++;
+        }
+        else if ( i == length - 1 ) {
+            list[j] = TStringSubStr( string, start, i - start + 1 );
+        }
+    }
 
     return list;
 }

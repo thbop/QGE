@@ -3,6 +3,12 @@
 int main() {
     CreateWindow( "Hello World OpenGL", 640, 480 );
 
+    char string[] = "Hello World I am Thbop";
+    int stringCount;
+    char **splitString = TStringSplit( string, ' ', &stringCount );
+    for ( int i = 0; i < stringCount; i++ ) {
+        printf("%s | ", splitString[i]);
+    }
 
     // Vertex buffer
     float verticies[] = {

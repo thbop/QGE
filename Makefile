@@ -2,7 +2,7 @@ CC = gcc
 SRC_FILES = src/glad.c
 LIB = -Llib -lglfw3dll
 INCLUDE = -Iinclude
-FLAGS = -fdiagnostics-color=always -Wall
+FLAGS = -g -fdiagnostics-color=always -Wall
 
 all: qge
 
