@@ -20,3 +20,95 @@
 * SOFTWARE.
 */
 
+#ifndef VECTOR_T_H
+#define VECTOR_T_H
+
+#include "stdlib.h"
+#include "string.h"
+
+
+#define VECTOR_T_START_BUFFER_SIZE 16
+
+// Dynamically resizable buffer
+typedef struct {
+    unsigned int
+        elementSize,  // sizeof(ElementType)
+        elementCount, // <= bufferSize
+        bufferSize;   // Always a multiple of 2
+    
+    unsigned char *buffer;
+} vector_t;
+
+// Creates a new vector_t given the sizeof() the element type to be stored
+vector_t _new_vector( int elementSize ) {
+    return (vector_t){
+        .elementSize  = elementSize,
+        .elementCount = 0,
+        .bufferSize   = VECTOR_T_START_BUFFER_SIZE,
+        .buffer       = (unsigned char*)malloc( VECTOR_T_START_BUFFER_SIZE * elementSize ),
+    };
+}
+
+// Creates a new vector_t given the element type
+#define new_vector( type ) \
+    _new_vector( sizeof(type) )
+
+
+// Doubles a vector's current buffer size and copies the values over
+void _vector_double_buffer( vector_t *vector ) {
+    if ( vector == NULL ) return;
+    
+    unsigned char *newBuffer = (unsigned char*)malloc( vector->bufferSize * vector->elementSize * 2 );
+
+    memcpy( newBuffer, vector->buffer, vector->bufferSize * vector->elementSize );
+    free( vector->buffer );
+
+    vector->bufferSize *= 2;
+    vector->buffer = newBuffer;
+}
+
+// Appends value to a vector and returns its index
+// Returns -1 if something went wrong
+int _vector_append( vector_t *vector, void *value ) {
+    if ( value == NULL ) return -1;
+    if ( vector->elementCount >= vector->bufferSize ) // Grow buffer
+        _vector_double_buffer( vector );    
+
+    // Copy it over
+    memcpy(
+        vector->buffer + ( vector->elementSize * vector->elementCount ),
+        value, vector->elementSize
+    );
+    vector->elementCount++;
+    return vector->elementCount - 1;
+}
+
+// Appends a value to a vector
+// Ensure you are appending a value of this same type as the vector. Does not
+// accept literals
+#define vector_append( vector, value ) \
+    _vector_append( &vector, &value )
+
+// Returns a pointer to a particular index
+// Use this instead of directly indexing the vector->buffer
+void *_vector_at( vector_t *vector, unsigned int index ) {
+    if ( index < vector->elementCount )
+        return vector->buffer + ( vector->elementSize * index );
+    return NULL;
+}
+
+// Macro-pointer tricks to access a particular element by index given the
+// vector type, the vector, and the index
+#define vector_at( type, vector, index ) \
+    ( *(type*)_vector_at( &vector, index ) )
+
+// Frees a vector's heap-allocated resources
+void _vector_free( vector_t *vector ) {
+    free( vector->buffer );
+}
+
+// Frees a vector's heap-allocated resources
+#define vector_free( vector ) \
+    _vector_free( &vector )
+
+#endif

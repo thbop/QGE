@@ -21,9 +21,25 @@
 */
 
 #include "qge.h"
+#include "vector_t.h"
 
 int main() {
     CreateWindow( "Hello World OpenGL", 640, 480 );
+
+    int
+        a = 1,
+        b = 64;
+    
+    vector_t vector = new_vector( int );
+
+    for ( int i = 0; i < 23; i++ ) {
+        vector_append( vector, a );
+        vector_append( vector, b );
+    }
+
+    printf( "%d", vector_at( int, vector, 45 ) );
+
+    vector_free( vector );
 
     // Vertex buffer
     float verticies[] = {

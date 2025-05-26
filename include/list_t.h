@@ -28,7 +28,8 @@
 #include "string.h"
 #include "stdlib.h"
 
-
+#ifndef QALLOC
+#define QALLOC
 void *_qalloc(void *value, size_t size) {
     void *v_ptr = malloc(size);
     memcpy(v_ptr, value, size);
@@ -39,6 +40,8 @@ void *_qalloc(void *value, size_t size) {
 // and copy that variable to the heap, returning a pointer.
 #define qalloc(value) \
     _qalloc(&value, sizeof(value))
+
+#endif
 
 // A list node
 typedef struct {
