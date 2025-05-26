@@ -38,7 +38,7 @@ int main() {
     glBufferData( GL_ARRAY_BUFFER, vector_sizeof_elements( model->vertices ), model->vertices.buffer, GL_STATIC_DRAW );
 
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, vector_sizeof_elements( model->indicies ), model->indicies.buffer, GL_STATIC_DRAW );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, vector_sizeof_elements( model->indices ), model->indices.buffer, GL_STATIC_DRAW );
     
     // position attribute
     glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0 );
@@ -59,7 +59,7 @@ int main() {
         glUseProgram( shader );
         glBindVertexArray( vao );
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
-        glDrawElements( GL_TRIANGLES, model->indicies.elementCount, GL_UNSIGNED_INT, (void*)0 );
+        glDrawElements( GL_TRIANGLES, model->indices.elementCount, GL_UNSIGNED_INT, (void*)0 );
 
         // Swap front and back buffers
         glfwSwapBuffers( ctx.window );

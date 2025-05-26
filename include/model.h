@@ -36,7 +36,7 @@
 typedef struct {
     char *name;
     vector_t vertices;
-    vector_t indicies;
+    vector_t indices;
 } Model;
 
 // Returns a new empty model. `name` can be NULL
@@ -44,7 +44,7 @@ Model *NewModel( const char *name ) {
     Model model = {
         .name      = NULL,
         .vertices = new_vector( float ),
-        .indicies  = new_vector( unsigned int ),
+        .indices  = new_vector( unsigned int ),
     };
     if ( name != NULL )
         model.name = TStringCopy( (char*)name );
@@ -79,13 +79,13 @@ void _ParseModelVertexLine( Model *model, char **args ) {
 // For example:
 // f 2/1/1 3/2/1 1/3/1
 void _ParseModelFaceLine( Model *model, char **args ) {
-    // Iterate through the three indicies
+    // Iterate through the three indices
     for ( int i = 1; i < 4; i++ ) {
         char *indexStr = TStringSubStr( args[i], 0, TStringFindChar( args[i], '/' ) );
         unsigned int index = atoi( indexStr ) - 1; // .obj indcies start with 1 instead of 0
         free(indexStr);
 
-        vector_append( model->indicies, index );
+        vector_append( model->indices, index );
     }
 }
 
@@ -143,7 +143,7 @@ void UnloadModel( Model *model ) {
         free( model->name );
     
     vector_free( model->vertices );
-    vector_free( model->indicies );
+    vector_free( model->indices );
 
     free( model );
 }
