@@ -101,6 +101,41 @@ int _vector_append( vector_t *vector, void *value ) {
 #define vector_append( vector, value ) \
     _vector_append( &(vector), &(value) )
 
+// Inserts a value at a particular index. This does not replace the value
+// that currently resides at that index, instead makes room for the value by
+// shifting other values upward
+void _vector_insert( vector_t *vector, unsigned int index, void *value ) {
+    if ( value == NULL ) return;
+    if ( index > vector->elementCount ) return;
+
+    // If we should actually append
+    if ( index == vector->elementCount )
+        _vector_append( vector, value );
+    
+    else {
+        // Strange code to reserve space for one more element
+        void *dummy = malloc( vector->elementSize );
+
+        _vector_append( vector, dummy );
+
+        free(dummy);
+        
+        // Shift existing values
+        void *indexPos  = vector->buffer + ( vector->elementSize * index );
+        int aboveSize = vector->elementSize * ( vector->elementCount - index - 1 );
+        memmove( indexPos + vector->elementSize, indexPos, aboveSize );
+
+        // Copy it over
+        memcpy( indexPos, value, vector->elementSize );
+    }
+}
+
+// Inserts a value at a particular index. This does not replace the value
+// that currently resides at that index, instead makes room for the value by
+// shifting other values upward
+#define vector_insert( vector, index, value ) \
+    _vector_insert( &(vector), index, &(value) )
+
 // Returns a pointer to a particular index
 // Use this instead of directly indexing the vector->buffer
 void *_vector_at( vector_t *vector, unsigned int index ) {

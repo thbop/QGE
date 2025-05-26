@@ -23,6 +23,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+
+
 // Reference:
 // - https://en.wikipedia.org/wiki/Wavefront_.obj_file
 

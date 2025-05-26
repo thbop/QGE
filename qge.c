@@ -25,8 +25,25 @@
 int main() {
     CreateWindow( "Hello World OpenGL", 640, 480 );
 
-    Model *model = LoadModel( "models/rubix.obj" );
 
+    vector_t vector = new_vector( int );
+    int
+        a = 1,
+        b = 2;
+
+    for ( int i = 0; i < 16; i++ )
+        vector_insert( vector, 0, a );
+    
+    vector_insert( vector, 12, b );
+
+
+    for ( int i = 0; i < vector.elementCount; i++ )
+        printf( "%d ", vector_at( int, vector, i ) );
+
+    vector_free( vector );
+
+
+    Model *model = LoadModel( "models/rubix.obj" );
 
     unsigned int vao, ebo, vbo;
     glGenVertexArrays( 1, &vao );

@@ -32,6 +32,7 @@
 #include "tfile.h"
 #include "shader.h"
 #include "model.h"
+#include "texture.h"
 
 
 // Context
