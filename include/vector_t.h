@@ -99,7 +99,7 @@ int _vector_append( vector_t *vector, void *value ) {
 // Ensure you are appending a value of this same type as the vector. Does not
 // accept literals
 #define vector_append( vector, value ) \
-    _vector_append( &vector, &value )
+    _vector_append( &(vector), &(value) )
 
 // Returns a pointer to a particular index
 // Use this instead of directly indexing the vector->buffer
@@ -112,7 +112,7 @@ void *_vector_at( vector_t *vector, unsigned int index ) {
 // Macro-pointer tricks to access a particular element by index given the
 // vector type, the vector, and the index
 #define vector_at( type, vector, index ) \
-    ( *(type*)_vector_at( &vector, index ) )
+    ( *(type*)_vector_at( &(vector), index ) )
 
 
 
@@ -130,7 +130,7 @@ int _vector_find( vector_t *vector, void *value ) {
 // Do not search for literals and ensure you are searching for a value of the
 // same type as the vector
 #define vector_find( vector, value ) \
-    _vector_find( &vector, &value )
+    _vector_find( &(vector), &(value) )
 
 void _vector_remove_index( vector_t *vector, unsigned int index ) {
     if ( index >= vector->elementCount ) return;
@@ -155,7 +155,7 @@ void _vector_remove_index( vector_t *vector, unsigned int index ) {
 
 // Removes the value at the given index from the vector
 #define vector_remove_index( vector, index ) \
-    _vector_remove_index( &vector, index )
+    _vector_remove_index( &(vector), index )
 
 // Finds a value and removes it if possible
 void _vector_remove( vector_t *vector, void *value ) {
@@ -168,7 +168,7 @@ void _vector_remove( vector_t *vector, void *value ) {
 // Do not provide literals and only remove values of the same type as the
 // vector
 #define vector_remove( vector, value ) \
-    _vector_remove( &vector, &value )
+    _vector_remove( &(vector), &(value) )
 
 // Frees a vector's heap-allocated resources
 void _vector_free( vector_t *vector ) {
@@ -177,6 +177,6 @@ void _vector_free( vector_t *vector ) {
 
 // Frees a vector's heap-allocated resources
 #define vector_free( vector ) \
-    _vector_free( &vector )
+    _vector_free( &(vector) )
 
 #endif

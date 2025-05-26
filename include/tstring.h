@@ -47,6 +47,11 @@ char *TStringSubStr( char *string, int pos, int len ) {
     return buffer;
 }
 
+// Returns a heap-allocated copy of the provided string
+char *TStringCopy( char *string ) {
+    return TStringSubStr( string, 0, strlen( string ) );
+}
+
 // Returns the number of times a particular character appears in a string.
 int TStringCountChar( char *string, char character ) {
     int length = strlen( string );
@@ -56,6 +61,16 @@ int TStringCountChar( char *string, char character ) {
             count++;
 
     return count;
+}
+
+// Returns the index of the first occurrence of the character provided
+// Returns -1 if the character is not found
+int TStringFindChar( char *string, char character ) {
+    for ( int i = 0; i < strlen( string ); i++ )
+        if ( string[i] == character )
+            return i;
+    
+    return -1;
 }
 
 // Splits a given null-terminated string by a given char
@@ -69,6 +84,10 @@ char **TStringSplit( char *string, char separator, int *stringCount ) {
     int length = strlen( string );
     int start = 0; // Start of the current substring
     int j = 0; // Position in the list of strings
+
+    // Ignore if the last character is the separator
+    if ( string[length - 1] == separator )
+        (*stringCount)--;
 
     for ( int i = 0; i < length; i++ ) {
         if ( string[i] == separator ) {

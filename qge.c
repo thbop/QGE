@@ -21,31 +21,20 @@
 */
 
 #include "qge.h"
-#include "vector_t.h"
 
 int main() {
     CreateWindow( "Hello World OpenGL", 640, 480 );
 
-    int
-        a = 1,
-        b = 64;
+    Model *model = LoadModel( "models/rubix.obj" );
     
-    vector_t vector = new_vector( int );
+    for ( int i = 0; i < model->verticies.elementCount; i++ )
+        printf( "%f ", vector_at( float, model->verticies, i ) );
+    
+    puts("\n");
+    
+    for ( int i = 0; i < model->indicies.elementCount; i++ )
+        printf( "%d ", vector_at( int, model->indicies, i ) );
 
-    for ( int i = 0; i < 8; i++ ) {
-        vector_append( vector, a );
-        vector_append( vector, b );
-    }
-    vector_append( vector, a );
-
-    vector_remove( vector, b );
-
-    vector_remove_index( vector, 14 );
-
-    for ( int i = 0; i < vector.elementCount; i++ )
-        printf( "%d ", vector_at( int, vector, i ) );
-
-    vector_free( vector );
 
     // Vertex buffer
     float verticies[] = {
@@ -98,6 +87,9 @@ int main() {
         // Poll for and process events
         glfwPollEvents();
     }
+
+    // Clean up
+    UnloadModel( model );
     glDeleteShader( shader );
     CloseWindow();
     return 0;
