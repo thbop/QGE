@@ -82,7 +82,7 @@ void _ParseModelFaceLine( Model *model, char **args ) {
     // Iterate through the three indicies
     for ( int i = 1; i < 4; i++ ) {
         char *indexStr = TStringSubStr( args[i], 0, TStringFindChar( args[i], '/' ) );
-        unsigned int index = atoi( indexStr );
+        unsigned int index = atoi( indexStr ) - 1; // .obj indcies start with 1 instead of 0
         free(indexStr);
 
         vector_append( model->indicies, index );

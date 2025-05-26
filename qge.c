@@ -26,27 +26,7 @@ int main() {
     CreateWindow( "Hello World OpenGL", 640, 480 );
 
     Model *model = LoadModel( "models/rubix.obj" );
-    
-    for ( int i = 0; i < model->verticies.elementCount; i++ )
-        printf( "%f ", vector_at( float, model->verticies, i ) );
-    
-    puts("\n");
-    
-    for ( int i = 0; i < model->indicies.elementCount; i++ )
-        printf( "%d ", vector_at( int, model->indicies, i ) );
 
-
-    // Vertex buffer
-    float verticies[] = {
-        // positions         colors
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom left
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f, // top 
-    };
-
-    unsigned int indices[] = {
-        0, 1, 2,
-    };
 
     unsigned int vao, ebo, vbo;
     glGenVertexArrays( 1, &vao );
@@ -55,10 +35,10 @@ int main() {
 
     glBindVertexArray( vao );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW );
+    glBufferData( GL_ARRAY_BUFFER, vector_sizeof_elements( model->verticies ), model->verticies.buffer, GL_STATIC_DRAW );
 
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, vector_sizeof_elements( model->indicies ), model->indicies.buffer, GL_STATIC_DRAW );
     
     // position attribute
     glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0 );
@@ -79,7 +59,7 @@ int main() {
         glUseProgram( shader );
         glBindVertexArray( vao );
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
-        glDrawElements( GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)0 );
+        glDrawElements( GL_TRIANGLES, model->indicies.elementCount, GL_UNSIGNED_INT, (void*)0 );
 
         // Swap front and back buffers
         glfwSwapBuffers( ctx.window );

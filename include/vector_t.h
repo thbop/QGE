@@ -114,7 +114,9 @@ void *_vector_at( vector_t *vector, unsigned int index ) {
 #define vector_at( type, vector, index ) \
     ( *(type*)_vector_at( &(vector), index ) )
 
-
+// "Returns" the size in bytes of all the elements
+#define vector_sizeof_elements( vector ) \
+    ( (vector).elementSize * (vector).elementCount )
 
 // Searches the vector for the provided value
 // Returns the index of the value. -1 if the value is not found.
