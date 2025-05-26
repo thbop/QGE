@@ -35,7 +35,7 @@
 // A CPU representation of the model to be loaded onto the GPU later
 typedef struct {
     char *name;
-    vector_t verticies;
+    vector_t vertices;
     vector_t indicies;
 } Model;
 
@@ -43,7 +43,7 @@ typedef struct {
 Model *NewModel( const char *name ) {
     Model model = {
         .name      = NULL,
-        .verticies = new_vector( float ),
+        .vertices = new_vector( float ),
         .indicies  = new_vector( unsigned int ),
     };
     if ( name != NULL )
@@ -57,10 +57,10 @@ Model *NewModel( const char *name ) {
 // For example:
 // v -1.000000 1.000000 0.000000
 void _ParseModelVertexLine( Model *model, char **args ) {
-    // Iterate through the three verticies
+    // Iterate through the three vertices
     for ( int i = 1; i < 4; i++ ) {
         float value = strtof( args[i], NULL );
-        vector_append( model->verticies, value );
+        vector_append( model->vertices, value );
     }
 
     // The current setup requires the color after each vertex
@@ -68,9 +68,9 @@ void _ParseModelVertexLine( Model *model, char **args ) {
         r = 0.3,
         g = 0.4,
         b = 0.7;
-    vector_append( model->verticies, r );
-    vector_append( model->verticies, g );
-    vector_append( model->verticies, b );
+    vector_append( model->vertices, r );
+    vector_append( model->vertices, g );
+    vector_append( model->vertices, b );
 }
 
 
@@ -142,7 +142,7 @@ void UnloadModel( Model *model ) {
     if ( model->name != NULL )
         free( model->name );
     
-    vector_free( model->verticies );
+    vector_free( model->vertices );
     vector_free( model->indicies );
 
     free( model );

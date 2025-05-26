@@ -35,7 +35,7 @@ int main() {
 
     glBindVertexArray( vao );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, vector_sizeof_elements( model->verticies ), model->verticies.buffer, GL_STATIC_DRAW );
+    glBufferData( GL_ARRAY_BUFFER, vector_sizeof_elements( model->vertices ), model->vertices.buffer, GL_STATIC_DRAW );
 
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, vector_sizeof_elements( model->indicies ), model->indicies.buffer, GL_STATIC_DRAW );
