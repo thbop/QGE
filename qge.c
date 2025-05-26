@@ -32,12 +32,18 @@ int main() {
     
     vector_t vector = new_vector( int );
 
-    for ( int i = 0; i < 23; i++ ) {
+    for ( int i = 0; i < 8; i++ ) {
         vector_append( vector, a );
         vector_append( vector, b );
     }
+    vector_append( vector, a );
 
-    printf( "%d", vector_at( int, vector, 45 ) );
+    vector_remove( vector, b );
+
+    vector_remove_index( vector, 14 );
+
+    for ( int i = 0; i < vector.elementCount; i++ )
+        printf( "%d ", vector_at( int, vector, i ) );
 
     vector_free( vector );
 

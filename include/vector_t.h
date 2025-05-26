@@ -53,7 +53,6 @@ vector_t _new_vector( int elementSize ) {
 #define new_vector( type ) \
     _new_vector( sizeof(type) )
 
-
 // Doubles a vector's current buffer size and copies the values over
 void _vector_double_buffer( vector_t *vector ) {
     if ( vector == NULL ) return;
@@ -64,6 +63,19 @@ void _vector_double_buffer( vector_t *vector ) {
     free( vector->buffer );
 
     vector->bufferSize *= 2;
+    vector->buffer = newBuffer;
+}
+
+// Halves a vector's current buffer size and copies the values over
+void _vector_half_buffer( vector_t *vector ) {
+    if ( vector == NULL ) return;
+    
+    vector->bufferSize >>= 1; // / 2
+    unsigned char *newBuffer = (unsigned char*)malloc( vector->bufferSize * vector->elementSize );
+
+    memcpy( newBuffer, vector->buffer, vector->bufferSize * vector->elementSize );
+    free( vector->buffer );
+
     vector->buffer = newBuffer;
 }
 
@@ -101,6 +113,62 @@ void *_vector_at( vector_t *vector, unsigned int index ) {
 // vector type, the vector, and the index
 #define vector_at( type, vector, index ) \
     ( *(type*)_vector_at( &vector, index ) )
+
+
+
+// Searches the vector for the provided value
+// Returns the index of the value. -1 if the value is not found.
+int _vector_find( vector_t *vector, void *value ) {
+    for ( int i = 0; i < vector->elementCount; i++ )
+        if ( !memcmp( _vector_at( vector, i ), value, vector->elementSize ) )
+            return i;
+    
+    return -1;
+}
+
+// Searches for the provided value. Returns the index or -1 if it is not found
+// Do not search for literals and ensure you are searching for a value of the
+// same type as the vector
+#define vector_find( vector, value ) \
+    _vector_find( &vector, &value )
+
+void _vector_remove_index( vector_t *vector, unsigned int index ) {
+    if ( index >= vector->elementCount ) return;
+
+    // Calculate how much memory we need to move
+    int aboveSize = ( vector->elementCount - index - 1 ) * vector->elementSize;
+
+    unsigned char *element = _vector_at( vector, index );
+
+    // If we're not dealing with the last value
+    //     slide the above memory down one element
+    if ( aboveSize > 0 )
+        memmove( element, element + vector->elementSize, aboveSize );
+        
+    vector->elementCount--;
+
+    // Check if we need to shrink the buffer
+    if ( vector->elementCount == vector->bufferSize >> 1 )
+        _vector_half_buffer( vector );
+
+}
+
+// Removes the value at the given index from the vector
+#define vector_remove_index( vector, index ) \
+    _vector_remove_index( &vector, index )
+
+// Finds a value and removes it if possible
+void _vector_remove( vector_t *vector, void *value ) {
+    int index = _vector_find( vector, value );
+    if ( index > -1 )
+        _vector_remove_index( vector, index );
+}
+
+// Removes the provided value from the vector
+// Do not provide literals and only remove values of the same type as the
+// vector
+#define vector_remove( vector, value ) \
+    _vector_remove( &vector, &value )
 
 // Frees a vector's heap-allocated resources
 void _vector_free( vector_t *vector ) {
