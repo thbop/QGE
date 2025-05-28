@@ -57,21 +57,24 @@ typedef struct {
 // `searchDepth` determines how many elements starting from index 0 will be
 // searched. This exists because this function is usually called before all
 // Returns the index of the existing face if found, else returns -1
-int IfOtherFaceExists( ModelBuild *model, Face *face, int searchDepth ) {
-    int depth = model->faces.elementCount;
+int ModelFindOrAppendFace( vector_t *faceList, Face *face, int searchDepth ) {
+    int depth = faceList->elementCount;
     if ( searchDepth > -1 && searchDepth < depth )
         depth = searchDepth;
 
     
     for ( int i = 0; i < depth; i++ ) {
-        Face *other = (Face*)_vector_at( &model->faces, i );
+        Face *other = (Face*)_vector_at( faceList, i );
         if (
             face->vertex == other->vertex     &&
-            face->texcoord == other->texcoord &&
-            face->index != other->index
+            face->texcoord == other->texcoord //&&
+            // face->index != other->index
         )
             return i;
     }
+    // Append if the face is not found
+    Face f = *face;
+    _vector_append( faceList, &f );
     return -1;
 }
 
@@ -208,13 +211,14 @@ Model *_ParseModel( ModelBuild *modelBuild ) {
     Model *model = NewModel( modelBuild->name );
 
     int index = 0;
+    vector_t faceList = new_vector( Face );
 
     // Iterate through the triangle/face vertices
     for ( int i = 0; i < modelBuild->faces.elementCount; i++ ) {
         Face *face = (Face*)_vector_at( &modelBuild->faces, i );
 
         // Check for duplicate faces
-        int existingFaceIndex = IfOtherFaceExists( modelBuild, face, i );
+        int existingFaceIndex = ModelFindOrAppendFace( &faceList, face, i );
         if ( existingFaceIndex != -1 )
             face->index = existingFaceIndex;
         else { // Create new face vertex
@@ -240,6 +244,8 @@ Model *_ParseModel( ModelBuild *modelBuild ) {
 
         vector_append( model->indices, face->index );
     }
+
+    vector_free( faceList );
 
     return model;
 }
