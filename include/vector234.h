@@ -23,16 +23,34 @@
 #ifndef VECTOR234_H
 #define VECTOR234_H
 
+// Vector2
 typedef struct {
     float x, y;
 } Vector2;
 
+// Vector3
 typedef struct {
     float x, y, z;
 } Vector3;
 
+// Vector4
 typedef struct {
     float x, y, z, w;
 } Vector4;
+
+// Prints a Vector2
+void PrintVector2( Vector2 v ) {
+    printf( "[ %f %f ]", v.x, v.y );
+}
+
+// Prints a Vector3
+void PrintVector3( Vector3 v ) {
+    printf( "[ %f %f %f ]", v.x, v.y, v.z );
+}
+
+// Prints a Vector4
+void PrintVector4( Vector4 v ) {
+    printf( "[ %f %f %f %f ]", v.x, v.y, v.z, v.w );
+}
 
 #endif

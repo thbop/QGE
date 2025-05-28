@@ -26,24 +26,13 @@ int main() {
     CreateWindow( "Hello World OpenGL", 640, 480 );
 
 
-    vector_t vector = new_vector( int );
-    int
-        a = 1,
-        b = 2;
-
-    for ( int i = 0; i < 16; i++ )
-        vector_insert( vector, 0, a );
-    
-    vector_insert( vector, 12, b );
-
-
-    for ( int i = 0; i < vector.elementCount; i++ )
-        printf( "%d ", vector_at( int, vector, i ) );
-
-    vector_free( vector );
-
-
     Model *model = LoadModel( "models/rubix.obj" );
+
+    for ( int i = 0; i < model->vertices.elementCount; i++ )
+        printf( "%f ", vector_at( float, model->vertices, i ) );
+    putchar( '\n' );
+    for ( int i = 0; i < model->indices.elementCount; i++ )
+        printf( "%u ", vector_at( unsigned int, model->indices, i ) );
 
     unsigned int vao, ebo, vbo;
     glGenVertexArrays( 1, &vao );
@@ -57,16 +46,23 @@ int main() {
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, vector_sizeof_elements( model->indices ), model->indices.buffer, GL_STATIC_DRAW );
     
-    // position attribute
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0 );
+    // Position attribute
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0 );
     glEnableVertexAttribArray( 0 );
 
-    // color attribute
-    glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)) );
+    // Color attribute
+    glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)) );
     glEnableVertexAttribArray( 1 );
+
+    // Texture coordinate attribute
+    glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)) );
+    glEnableVertexAttribArray( 2 );
 
     // Shader stuff
     ShaderHandle shader = LoadShaderProgram( "shaders/core.vert", "shaders/core.frag" );
+
+    // Texture stuff
+    Texture texture = LoadTexture( "textures/rubix.png" );
     
     // Loop until the user closes the window
     while ( !WindowShouldClose() ) {
@@ -74,6 +70,7 @@ int main() {
         ClearWindow( BLACK );
         
         glUseProgram( shader );
+        glBindTexture( GL_TEXTURE_2D, texture.handle );
         glBindVertexArray( vao );
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
         glDrawElements( GL_TRIANGLES, model->indices.elementCount, GL_UNSIGNED_INT, (void*)0 );

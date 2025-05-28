@@ -28,6 +28,22 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+// Definitions
+#define QGE_POSITION_STRIDE 3
+#define QGE_COLOR_STRIDE    3
+#define QGE_TEXCOORD_STRIDE 2
+
+// Colors
+typedef struct {
+    float r, g, b, a;
+} Color;
+
+#define BLACK (Color){ 0.0f, 0.0f, 0.0f, 1.0f }
+#define WHITE (Color){ 1.0f, 1.0f, 1.0f, 1.0f }
+#define RED   (Color){ 1.0f, 0.0f, 0.0f, 1.0f }
+#define GREEN (Color){ 0.0f, 1.0f, 0.0f, 1.0f }
+#define BLUE  (Color){ 0.0f, 0.0f, 1.0f, 1.0f }
+
 // My stuff
 #include "tfile.h"
 #include "shader.h"
@@ -40,16 +56,6 @@ struct {
     GLFWwindow *window;
 } ctx;
 
-// Colors
-typedef struct {
-    float r, g, b, a;
-} Color;
-
-#define BLACK (Color){ 0.0f, 0.0f, 0.0f, 1.0f }
-#define WHITE (Color){ 1.0f, 1.0f, 1.0f, 1.0f }
-#define RED   (Color){ 1.0f, 0.0f, 0.0f, 1.0f }
-#define GREEN (Color){ 0.0f, 1.0f, 0.0f, 1.0f }
-#define BLUE  (Color){ 0.0f, 0.0f, 1.0f, 1.0f }
 
 // Initializes the window
 bool CreateWindow( const char *title, int width, int height ) {

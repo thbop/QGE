@@ -34,6 +34,47 @@
 #include "vector_t.h"
 #include "list_t.h" // for qalloc
 
+// A face/triangle used for building a Model
+typedef struct {
+    unsigned int
+        vertex,
+        texcoord,
+        normal;
+    int index;    // Generated index for a particular combination (-1 by default)
+} Face;
+
+
+// A more flexible model structure for building a Model
+typedef struct {
+    char *name;
+    Color color;
+    vector_t vertices;
+    vector_t texCoords;
+    vector_t faces;
+} ModelBuild;
+
+// Checks if an existing face matches the supplied face
+// `searchDepth` determines how many elements starting from index 0 will be
+// searched. This exists because this function is usually called before all
+// Returns the index of the existing face if found, else returns -1
+int IfOtherFaceExists( ModelBuild *model, Face *face, int searchDepth ) {
+    int depth = model->faces.elementCount;
+    if ( searchDepth > -1 && searchDepth < depth )
+        depth = searchDepth;
+
+    
+    for ( int i = 0; i < depth; i++ ) {
+        Face *other = (Face*)_vector_at( &model->faces, i );
+        if (
+            face->vertex == other->vertex     &&
+            face->texcoord == other->texcoord &&
+            face->index != other->index
+        )
+            return i;
+    }
+    return -1;
+}
+
 // A CPU representation of the model to be loaded onto the GPU later
 typedef struct {
     char *name;
@@ -41,10 +82,25 @@ typedef struct {
     vector_t indices;
 } Model;
 
+// Returns a new empty model build. `name` can be NULL
+ModelBuild *NewModelBuild( const char *name, Color color ) {
+    ModelBuild model = {
+        .name      = NULL,
+        .color     = color,
+        .vertices  = new_vector( Vector3 ),
+        .texCoords = new_vector( Vector2 ),
+        .faces     = new_vector( Face ),
+    };
+    if ( name != NULL )
+        model.name = TStringCopy( (char*)name );
+    
+    return qalloc( model );
+}
+
 // Returns a new empty model. `name` can be NULL
 Model *NewModel( const char *name ) {
     Model model = {
-        .name      = NULL,
+        .name     = NULL,
         .vertices = new_vector( float ),
         .indices  = new_vector( unsigned int ),
     };
@@ -58,21 +114,28 @@ Model *NewModel( const char *name ) {
 // Parses a single vertex line of a Wavefront .obj file and updates the model
 // For example:
 // v -1.000000 1.000000 0.000000
-void _ParseModelVertexLine( Model *model, char **args ) {
-    // Iterate through the three vertices
-    for ( int i = 1; i < 4; i++ ) {
-        float value = strtof( args[i], NULL );
-        vector_append( model->vertices, value );
+void _LexModelVertexLine( char **args, ModelBuild *model ) {
+    switch ( args[0][1] ) {
+        case '\0': { // v - vertex
+            Vector3 vertex = {
+                strtof( args[1], NULL ),
+                strtof( args[2], NULL ),
+                strtof( args[3], NULL ),
+            };
+            vector_append( model->vertices, vertex );
+            break;
+        }
+        case 'n': // vn - normal
+            break;
+        case 't': { // vt - texture coordinate
+            Vector2 texCoord = {
+                strtof( args[1], NULL ),
+                strtof( args[2], NULL ),
+            };
+            vector_append( model->texCoords, texCoord );
+            break;
+        }
     }
-
-    // The current setup requires the color after each vertex
-    float
-        r = 0.3,
-        g = 0.4,
-        b = 0.7;
-    vector_append( model->vertices, r );
-    vector_append( model->vertices, g );
-    vector_append( model->vertices, b );
 }
 
 
@@ -80,14 +143,24 @@ void _ParseModelVertexLine( Model *model, char **args ) {
 // Currently only uses the vertex index
 // For example:
 // f 2/1/1 3/2/1 1/3/1
-void _ParseModelFaceLine( Model *model, char **args ) {
+void _LexModelFaceLine( char **args, ModelBuild *model ) {
     // Iterate through the three indices
     for ( int i = 1; i < 4; i++ ) {
-        char *indexStr = TStringSubStr( args[i], 0, TStringFindChar( args[i], '/' ) );
-        unsigned int index = atoi( indexStr ) - 1; // .obj indcies start with 1 instead of 0
-        free(indexStr);
+        // Get vertex attributes:
+        // vertex_index/texture_index/normal_index
+        int attributeCount; // 3
+        char **attributes = TStringSplit( args[i], '/', &attributeCount );
 
-        vector_append( model->indices, index );
+        Face face = {
+            // .obj indcies start with 1 instead of 0
+            .vertex   = atoi( attributes[0] ) - 1,
+            .texcoord = atoi( attributes[1] ) - 1,
+            .normal   = atoi( attributes[2] ) - 1,
+            .index    = -1,
+        };
+        vector_append( model->faces, face );
+
+        TStringFreeStringArray( attributes, attributeCount );
     }
 }
 
@@ -97,7 +170,7 @@ void _ParseModelFaceLine( Model *model, char **args ) {
 // o Plane
 // v -1.000 -1.000 -0.000
 // ```
-void _ParseModelLine( Model *model, char *line ) {
+void _LexModelLine( char *line, ModelBuild *model ) {
     int argCount;
     char **args = TStringSplit( line, ' ', &argCount );
 
@@ -105,15 +178,70 @@ void _ParseModelLine( Model *model, char *line ) {
     if ( args[0][0] == 'o' && model->name == NULL )
         model->name = TStringCopy( args[1] );
     
-    // If line is a vertex (v, not vt or vn)
-    else if ( !strcmp( args[0], "v" ) )
-        _ParseModelVertexLine( model, args );
+    // If line is a vertex (v, vt, vn)
+    else if ( args[0][0] == 'v' )
+        _LexModelVertexLine( args, model );
     
     // If line is a face (f)
     else if ( args[0][0] == 'f' )
-        _ParseModelFaceLine( model, args );
+        _LexModelFaceLine( args, model );
 
     TStringFreeStringArray( args, argCount );
+}
+
+// Frees and deletes a ModelBuild
+void UnloadModelBuild( ModelBuild *model ) {
+    if ( model == NULL ) return;
+
+    if ( model->name != NULL )
+        free( model->name );
+    
+    vector_free( model->vertices );
+    vector_free( model->texCoords );
+    vector_free( model->faces );
+
+    free( model );
+}
+
+// Builds a Model from a ModelBuild
+Model *_ParseModel( ModelBuild *modelBuild ) {
+    Model *model = NewModel( modelBuild->name );
+
+    int index = 0;
+
+    // Iterate through the triangle/face vertices
+    for ( int i = 0; i < modelBuild->faces.elementCount; i++ ) {
+        Face *face = (Face*)_vector_at( &modelBuild->faces, i );
+
+        // Check for duplicate faces
+        int existingFaceIndex = IfOtherFaceExists( modelBuild, face, i );
+        if ( existingFaceIndex != -1 )
+            face->index = existingFaceIndex;
+        else { // Create new face vertex
+            face->index = index;
+
+            Vector3 position = vector_at( Vector3, modelBuild->vertices, face->vertex );
+            Vector2 texCoord = vector_at( Vector2, modelBuild->texCoords, face->texcoord );
+
+            // Build face/triangle vertex
+            vector_append( model->vertices, position.x );
+            vector_append( model->vertices, position.y );
+            vector_append( model->vertices, position.z );
+
+            vector_append( model->vertices, modelBuild->color.r );
+            vector_append( model->vertices, modelBuild->color.g );
+            vector_append( model->vertices, modelBuild->color.b );
+
+            vector_append( model->vertices, texCoord.x );
+            vector_append( model->vertices, texCoord.y );
+
+            index++;
+        }
+
+        vector_append( model->indices, face->index );
+    }
+
+    return model;
 }
 
 // Loads the only object in a Wavefront .obj file (ensure that there is only
@@ -126,13 +254,17 @@ Model *LoadModel( const char *modelFileName ) {
     int lineCount;
     char **lines = TStringSplit( data, '\n', &lineCount );
 
-    Model *model = NewModel( NULL );
+    ModelBuild *modelBuild = NewModelBuild( NULL, WHITE );
 
     for ( int i = 0; i < lineCount; i++ )
-        _ParseModelLine( model, lines[i] );
+        _LexModelLine( lines[i], modelBuild );
 
     TStringFreeStringArray( lines, lineCount );
     free( data );
+
+    Model *model = _ParseModel( modelBuild );
+
+    UnloadModelBuild( modelBuild );
 
     return model;
 }
