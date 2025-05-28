@@ -28,19 +28,6 @@ int main() {
 
     Model *model = LoadModel( "models/rubix.obj" );
 
-    for ( int i = 0; i < model->vertices.elementCount; i += 8 ) {
-        for ( int j = 0; j < 8; j++ )
-            printf( "%f ", vector_at( float, model->vertices, i + j ) );
-        putchar( '\n' );
-    }
-    putchar( '\n' );
-
-    for ( int i = 0; i < model->indices.elementCount; i += 3 ) {
-        for ( int j = 0; j < 3; j++ )
-            printf( "%d ", vector_at( unsigned int, model->indices, i + j ) );
-        putchar( '\n' );
-    }
-
     unsigned int vao, ebo, vbo;
     glGenVertexArrays( 1, &vao );
     glGenBuffers( 1, &vbo );

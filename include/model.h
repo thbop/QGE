@@ -40,7 +40,6 @@ typedef struct {
         vertex,
         texcoord,
         normal;
-    int index;    // Generated index for a particular combination (-1 by default)
 } Face;
 
 
@@ -67,8 +66,7 @@ int ModelFindOrAppendFace( vector_t *faceList, Face *face, int searchDepth ) {
         Face *other = (Face*)_vector_at( faceList, i );
         if (
             face->vertex == other->vertex     &&
-            face->texcoord == other->texcoord //&&
-            // face->index != other->index
+            face->texcoord == other->texcoord
         )
             return i;
     }
@@ -159,7 +157,6 @@ void _LexModelFaceLine( char **args, ModelBuild *model ) {
             .vertex   = atoi( attributes[0] ) - 1,
             .texcoord = atoi( attributes[1] ) - 1,
             .normal   = atoi( attributes[2] ) - 1,
-            .index    = -1,
         };
         vector_append( model->faces, face );
 
@@ -211,6 +208,7 @@ Model *_ParseModel( ModelBuild *modelBuild ) {
     Model *model = NewModel( modelBuild->name );
 
     int index = 0;
+    int faceIndex;
     vector_t faceList = new_vector( Face );
 
     // Iterate through the triangle/face vertices
@@ -220,9 +218,9 @@ Model *_ParseModel( ModelBuild *modelBuild ) {
         // Check for duplicate faces
         int existingFaceIndex = ModelFindOrAppendFace( &faceList, face, i );
         if ( existingFaceIndex != -1 )
-            face->index = existingFaceIndex;
+            faceIndex = existingFaceIndex;
         else { // Create new face vertex
-            face->index = index;
+            faceIndex = index;
 
             Vector3 position = vector_at( Vector3, modelBuild->vertices, face->vertex );
             Vector2 texCoord = vector_at( Vector2, modelBuild->texCoords, face->texcoord );
@@ -242,7 +240,7 @@ Model *_ParseModel( ModelBuild *modelBuild ) {
             index++;
         }
 
-        vector_append( model->indices, face->index );
+        vector_append( model->indices, faceIndex );
     }
 
     vector_free( faceList );
