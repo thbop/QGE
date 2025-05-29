@@ -23,8 +23,11 @@
 #include "qge.h"
 
 int main() {
-    CreateWindow( "Hello World OpenGL", 640, 480 );
-
+    int
+        width  = 640,
+        height = 480;
+    
+    CreateWindow( "Hello World OpenGL", width, height );
 
     Model *model = LoadModel( "models/rubix.obj" );
 
@@ -57,21 +60,37 @@ int main() {
 
     // Texture stuff
     Texture texture = LoadTexture( "textures/rubix.png" );
+
+    // Projection
+    mat4s view = glms_mat4_identity();
+    view = glms_translate( view, (vec3s){{ 0.0f, 0.0f, -5.0f }} );
+    
+    mat4s projection = glms_perspective( glm_rad( 45.0f ), (float)width / (float)height, 0.1f, 100.0f );
+
     
     // Loop until the user closes the window
     while ( !WindowShouldClose() ) {
         // Update
-        mat4s transform = glms_mat4_identity();
-        float stretchy = sinf( (float)glfwGetTime() );
-        transform = glms_rotate( transform, stretchy, (vec3s){{ 0.0f, 0.0f, 1.0f }} );
-        stretchy = ( stretchy + 1.5f ) / 2.0f;
-        transform = glms_scale( transform, (vec3s){{ stretchy, stretchy, stretchy }} );
+        if ( glfwGetKey( ctx.window, GLFW_KEY_W ) == GLFW_PRESS )
+            view = glms_translate( view, (vec3s){{ 0.0f, 0.0f, 0.04f }} );
+        if ( glfwGetKey( ctx.window, GLFW_KEY_S ) == GLFW_PRESS )
+            view = glms_translate( view, (vec3s){{ 0.0f, 0.0f, -0.04f }} );
+        if ( glfwGetKey( ctx.window, GLFW_KEY_A ) == GLFW_PRESS )
+            view = glms_translate( view, (vec3s){{ 0.04f, 0.0f, 0.0f }} );
+        if ( glfwGetKey( ctx.window, GLFW_KEY_D ) == GLFW_PRESS )
+            view = glms_translate( view, (vec3s){{ -0.04f, 0.0f, 0.0f }} );
+
+        mat4s modelTransform = glms_mat4_identity();
+        modelTransform = glms_rotate( modelTransform, sinf( (float)glfwGetTime() ), (vec3s){{ 0.0f, 1.0f, 0.0f }} );
+
 
         // Drawing
         ClearWindow( BLACK );
         
         glUseProgram( shader );
-        ShaderUniformMatrix4f( shader, "transform", transform );
+        ShaderUniformMatrix4f( shader, "model", modelTransform );
+        ShaderUniformMatrix4f( shader, "view", view );
+        ShaderUniformMatrix4f( shader, "projection", projection );
 
         glBindTexture( GL_TEXTURE_2D, texture.handle );
 

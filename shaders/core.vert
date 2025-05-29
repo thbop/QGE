@@ -6,11 +6,13 @@ layout ( location = 2 ) in vec2 inTexCoord;
 out vec4 vertexColor;
 out vec2 texCoord;
 
-uniform mat4 transform;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 
 void main() {
-    gl_Position = transform * vec4( inPos, 1.0 );
+    gl_Position = projection * view * model * vec4( inPos, 1.0 );
     vertexColor = vec4( inColor, 1.0 );
     texCoord = inTexCoord;
 }

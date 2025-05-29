@@ -80,6 +80,8 @@ bool CreateWindow( const char *title, int width, int height ) {
         return false;
     
     // glViewport( 0, 0, width, height );
+
+    glEnable( GL_DEPTH_TEST );
     
     return true;
 }
@@ -91,7 +93,7 @@ bool CreateWindow( const char *title, int width, int height ) {
 // Clears the screen as a specific color
 void ClearWindow( Color color ) {
     glClearColor( color.r, color.g, color.b, color.a );
-    glClear( GL_COLOR_BUFFER_BIT );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
 
 // Close window
