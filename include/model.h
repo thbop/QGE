@@ -88,8 +88,8 @@ ModelBuild *NewModelBuild( const char *name, Color color ) {
     ModelBuild model = {
         .name      = NULL,
         .color     = color,
-        .vertices  = new_vector( Vector3 ),
-        .texCoords = new_vector( Vector2 ),
+        .vertices  = new_vector( vec3s ),
+        .texCoords = new_vector( vec2s ),
         .faces     = new_vector( Face ),
     };
     if ( name != NULL )
@@ -118,21 +118,21 @@ Model *NewModel( const char *name ) {
 void _LexModelVertexLine( char **args, ModelBuild *model ) {
     switch ( args[0][1] ) {
         case '\0': { // v - vertex
-            Vector3 vertex = {
+            vec3s vertex = {{
                 strtof( args[1], NULL ),
                 strtof( args[2], NULL ),
                 strtof( args[3], NULL ),
-            };
+            }};
             vector_append( model->vertices, vertex );
             break;
         }
         case 'n': // vn - normal
             break;
         case 't': { // vt - texture coordinate
-            Vector2 texCoord = {
+            vec2s texCoord = {{
                 strtof( args[1], NULL ),
                 strtof( args[2], NULL ),
-            };
+            }};
             vector_append( model->texCoords, texCoord );
             break;
         }
@@ -222,8 +222,8 @@ Model *_ParseModel( ModelBuild *modelBuild ) {
         else { // Create new face vertex
             faceIndex = index;
 
-            Vector3 position = vector_at( Vector3, modelBuild->vertices, face->vertex );
-            Vector2 texCoord = vector_at( Vector2, modelBuild->texCoords, face->texcoord );
+            vec3s position = vector_at( vec3s, modelBuild->vertices, face->vertex );
+            vec2s texCoord = vector_at( vec2s, modelBuild->texCoords, face->texcoord );
 
             // Build face/triangle vertex
             vector_append( model->vertices, position.x );

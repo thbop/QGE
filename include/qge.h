@@ -23,10 +23,14 @@
 // Standard includes
 #include "stdio.h"
 #include "stdbool.h"
+#include "math.h"
 
 // OpenGL stuff
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+
+// cglm
+#include "cglm/struct.h"
 
 // Definitions
 #define QGE_POSITION_STRIDE 3

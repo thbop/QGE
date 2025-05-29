@@ -23,8 +23,6 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "vector234.h"
-
 
 typedef unsigned int ShaderHandle;
 
@@ -87,19 +85,24 @@ void ShaderUniform1f( ShaderHandle shader, const char *name, float value ) {
     glUniform1f( location, value );
 }
 
-void ShaderUniform2f( ShaderHandle shader, const char *name, Vector2 value ) {
+void ShaderUniform2f( ShaderHandle shader, const char *name, vec2s value ) {
     int location = glGetUniformLocation( shader, name );
     glUniform2f( location, value.x, value.y );
 }
 
-void ShaderUniform3f( ShaderHandle shader, const char *name, Vector3 value ) {
+void ShaderUniform3f( ShaderHandle shader, const char *name, vec3s value ) {
     int location = glGetUniformLocation( shader, name );
     glUniform3f( location, value.x, value.y, value.z );
 }
 
-void ShaderUniform4f( ShaderHandle shader, const char *name, Vector4 value ) {
+void ShaderUniform4f( ShaderHandle shader, const char *name, vec4s value ) {
     int location = glGetUniformLocation( shader, name );
     glUniform4f( location, value.x, value.y, value.z, value.w );
+}
+
+void ShaderUniformMatrix4f( ShaderHandle shader, const char *name, mat4s value ) {
+    int location = glGetUniformLocation( shader, name );
+    glUniformMatrix4fv( location, 1, GL_FALSE, (float*)&value );
 }
 
 #endif

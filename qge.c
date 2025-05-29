@@ -60,13 +60,24 @@ int main() {
     
     // Loop until the user closes the window
     while ( !WindowShouldClose() ) {
+        // Update
+        mat4s transform = glms_mat4_identity();
+        float stretchy = sinf( (float)glfwGetTime() );
+        transform = glms_rotate( transform, stretchy, (vec3s){{ 0.0f, 0.0f, 1.0f }} );
+        stretchy = ( stretchy + 1.5f ) / 2.0f;
+        transform = glms_scale( transform, (vec3s){{ stretchy, stretchy, stretchy }} );
+
         // Drawing
         ClearWindow( BLACK );
         
         glUseProgram( shader );
+        ShaderUniformMatrix4f( shader, "transform", transform );
+
         glBindTexture( GL_TEXTURE_2D, texture.handle );
+
         glBindVertexArray( vao );
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
+
         glDrawElements( GL_TRIANGLES, model->indices.elementCount, GL_UNSIGNED_INT, (void*)0 );
 
         // Swap front and back buffers
